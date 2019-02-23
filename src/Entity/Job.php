@@ -59,7 +59,17 @@ class Job
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $applyState;
+    private $applyState = "no apply";
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $applyAt;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $etc;
 
     public function getId(): ?int
     {
@@ -167,6 +177,30 @@ class Job
     public function setApplyState(string $applyState): self
     {
         $this->applyState = $applyState;
+
+        return $this;
+    }
+
+    public function getApplyAt(): ?\DateTimeInterface
+    {
+        return $this->applyAt;
+    }
+
+    public function setApplyAt(?\DateTimeInterface $applyAt): self
+    {
+        $this->applyAt = $applyAt;
+
+        return $this;
+    }
+
+    public function getEtc(): ?string
+    {
+        return $this->etc;
+    }
+
+    public function setEtc(?string $etc): self
+    {
+        $this->etc = $etc;
 
         return $this;
     }

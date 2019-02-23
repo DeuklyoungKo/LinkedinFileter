@@ -135,7 +135,7 @@ class CollectLinkedinController extends AbstractController
     /**
      * @Route("/row", name="collect_linkedin_rowdata")
      */
-    public function index()
+    public function collectLinkedinRowdata()
     {
 
 
@@ -166,9 +166,4 @@ class CollectLinkedinController extends AbstractController
         ]);
     }
 
-
-    public function addJobList()
-    {
-
-    }
 }
