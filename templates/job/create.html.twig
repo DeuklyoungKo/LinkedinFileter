@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Creating Job{% endblock %}
+
+
+{% block body %}
+    <h1>Creating Job!</h1>
+    {{ form_start(jobForm,{
+        'attr':{'novalidate':'novalidate'},
+    }) }}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {{ form_row(jobForm.title) }}
+    {{ form_row(jobForm.company) }}
+    {{ form_row(jobForm.location) }}
+    {{ form_row(jobForm.description) }}
+    {{ form_row(jobForm.link) }}
+    {{ form_row(jobForm.publishedAt) }}
+    {{ form_row(jobForm.jobId) }}
+    {{ form_row(jobForm.applyState) }}
+    {{ form_row(jobForm.etc) }}
+    {{ form_row(jobForm.source) }}
+
+    <button type="submit" class="btn btn-primary">Creating</button>
+    {{ form_end(jobForm) }}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function() {
+
+        });
+    </script>
+{% endblock %}

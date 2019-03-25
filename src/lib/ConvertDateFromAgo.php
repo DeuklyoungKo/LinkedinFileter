@@ -44,6 +44,7 @@ class ConvertDateFromAgo
             $dateNumber = strtotime('-'.$Number.' month');
         }
 
+
         if ($dateNumber) {
             return new \DateTime(date('Y-m-d H:i:s',$dateNumber));
         }else{

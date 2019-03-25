@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\lib\ConvertDateFromAgo;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\JobRepository")
@@ -12,6 +15,8 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 class Job
 {
     use TimestampableEntity;
+
+    const JOB_LIST_FILTER_LOCATION = ['Berlin','Munich','Cologne','Frankfurt'];
 
     /**
      * @ORM\Id()
@@ -22,16 +27,19 @@ class Job
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $title;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $company;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $location;
 
@@ -41,17 +49,18 @@ class Job
     private $description;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=400, nullable=true)
      */
     private $link;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank()
      */
     private $publishedAt;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      *
      */
     private $jobId;
@@ -59,7 +68,7 @@ class Job
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $applyState = "no apply";
+    private $applyState = "notApply";
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -70,6 +79,19 @@ class Job
      * @ORM\Column(type="text", nullable=true)
      */
     private $etc;
+
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     */
+    private $source;
+
+
+
+    public function __construct()
+    {
+    }
 
     public function getId(): ?int
     {
@@ -152,12 +174,14 @@ class Job
         if (strpos($publishedAt,'ago')) {
             $convertDateFrmAgo = new ConvertDateFromAgo();
             $this->setpublishedAt($convertDateFrmAgo->convertDate($publishedAt));
+        }else if (strpos($publishedAt,'Just now') ) {
+            $this->setpublishedAt(date("Y-m-d H:i:s"));
         }else{
             $this->setpublishedAt($publishedAt);
         }
     }
 
-    public function getJobId(): ?int
+    public function getJobId(): ?string
     {
         return $this->jobId;
     }
@@ -174,7 +198,7 @@ class Job
         return $this->applyState;
     }
 
-    public function setApplyState(string $applyState): self
+    public function setApplyState(?string $applyState): self
     {
         $this->applyState = $applyState;
 
@@ -204,4 +228,17 @@ class Job
 
         return $this;
     }
+
+    public function getSource(): ?string
+    {
+        return $this->source;
+    }
+
+    public function setSource(?string $source): self
+    {
+        $this->source = $source;
+
+        return $this;
+    }
+
 }

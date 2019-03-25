@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Job;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @method Job|null find($id, $lockMode = null, $lockVersion = null)
@@ -29,32 +31,87 @@ class JobRepository extends ServiceEntityRepository
 
         return $qb->execute();
     }
-    // /**
-    //  * @return Job[] Returns an array of Job objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('j')
-            ->andWhere('j.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('j.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Job
+
+    public function getWithSearchQueryBuilder(Request $request): QueryBuilder
     {
-        return $this->createQueryBuilder('j')
-            ->andWhere('j.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
+
+        $term = $request->query->get('q');
+        $language = $request->query->get('language');
+        $stateFilter = $request->query->get('stateFilter');
+        $locationFilter = $request->query->get('locationFilter');
+        $titleFilter = $request->query->get('titleFilter');
+
+
+        $qb = $this->createQueryBuilder('j')
+            ->orderBy('j.updatedAt','DESC')
         ;
+
+        if ($stateFilter) {
+            $qb->andWhere("j.applyState = :stateFilter")
+               ->setParameter('stateFilter', $stateFilter)
+            ;
+        }
+
+        if ($locationFilter) {
+
+            if ($locationFilter === 'etc') {
+
+                $jobListFilterLocations = Job::JOB_LIST_FILTER_LOCATION;
+
+                foreach ($jobListFilterLocations as $jobListFilterLocation) {
+
+                    $qb->andWhere("j.location not LIKE :".$jobListFilterLocation)
+                       ->setParameter($jobListFilterLocation, '%'.$jobListFilterLocation.'%');
+                }
+
+            }else{
+                $qb->andWhere("j.location LIKE :locationFilter")
+                   ->setParameter('locationFilter', '%'.$locationFilter.'%')
+                ;
+            }
+
+        }
+
+        if ($titleFilter) {
+            $qb->andWhere("j.title LIKE :titleFilter")
+               ->setParameter('titleFilter', '%'.$titleFilter.'%');
+        }
+
+        if ($term) {
+            $qb->andWhere("j.company like :term")
+                ->setParameter('term', "%".$term."%")
+            ;
+        }
+
+        if ($language || $language !== 'ALL') {
+
+            if ($language === 'English') {
+                $qb->andWhere("REGEXP(j.description, '[[:blank:]]on[[:blank:]]|[[:blank:]]and[[:blank:]]|[[:blank:]]the[[:blank:]]|[[:blank:]]a[[:blank:]]|[[:blank:]]to[[:blank:]]') = 1");
+            }
+
+            if ($language === 'German') {
+                $qb->andWhere("REGEXP(j.description, '[[:blank:]]on[[:blank:]]|[[:blank:]]and[[:blank:]]|[[:blank:]]the[[:blank:]]') = 0");
+            }
+
+        }
+
+        return $qb;
     }
-    */
+
+
+    public function getStatisticApplyJob(): QueryBuilder
+    {
+
+        $qb = $this->createQueryBuilder('j')
+            ->select("DATE_FORMAT(j.applyAt, '%m-%d-%Y') as dateVal, COUNT(j.id) as cnt")
+            ->andWhere("j.applyAt is not null")
+            ->groupBy("dateVal")
+            ->orderBy('dateVal','DESC')
+        ;
+
+        return $qb;
+    }
+
+
 }

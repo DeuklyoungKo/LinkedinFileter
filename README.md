@@ -1,4 +1,1 @@
-# LinkedinFileter
-
-
-closed
+# collectJobInfo

@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello CollectLinkedinController!{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}">
+{% endblock %}
+
+{% block body %}
+
+    <div class="fixed-top js-alert-top"></div>
+
+    <h1>job list ({{ jobs.getTotalItemCount }})</h1>
+
+    <form class="js-search-form">
+        <div class="form-row  align-items-center">
+            <div class="col-1">Filter:</div>
+            <div class="col-4">
+                <label for="idFilterApplication">state</label>
+                <select class="js-select-filter" id="idFilterApplication" name="stateFilter" data-prevalue="{{ app.request.query.get('stateFilter') }}">
+                    <option value="">All</option>
+                    <option>notApply</option>
+                    <option>trying</option>
+                    <option>pending</option>
+                    <option>failed</option>
+                    <option>interviewCall</option>
+                    <option>secondInterview</option>
+                    <option>skillInterview</option>
+                </select>
+            </div>
+
+            <div class="col-3">
+                <label for="idFilterApplication">Location</label>
+                <select class="js-select-location-filter" id="idFilterLocation" name="locationFilter" data-prevalue="{{ app.request.query.get('locationFilter') }}">
+                    <option value="">All</option>
+                    {% for Location in jobListFilterLocations %}
+                        <option>{{ Location }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-3">
+                <label for="idFilterTitle">Title</label>
+                <select class="js-select-title-filter" id="idFilterTitle" name="titleFilter" data-prevalue="{{ app.request.query.get('titleFilter') }}">
+                    <option value="">All</option>
+                    <option>PHP</option>
+                </select>
+            </div>
+
+        </div>
+        <div class="form-row mb-3">
+            <div class="col-7">
+                <input type="text"
+                       name="q"
+                       class="form-control js-search-q"
+                       placeholder="Search..."
+                       value="{{ app.request.query.get('q') }}"
+                >
+            </div>
+            <div class="col">
+                <select class="form-control js-select-language" name="language" data-prevalue="{{ app.request.query.get('language') }}">
+                    <option value="">select language</option>
+                    <option>All</option>
+                    <option>English</option>
+                    <option>German</option>
+                </select>
+            </div>
+            <div class="col">
+                <div class="input-group-append">
+                    <button type="submit"
+                            class="btn btn-outline-secondary ">
+                        <span class="fa fa-search"></span>
+                    </button>
+                    <button type="button"
+                            class="btn btn-outline-secondary js-check-company">
+                        <span class="fa fa-search-minus"></span>
+                    </button>
+                    <button type="button"
+                            class="btn btn-outline-secondary js-get-list-basic">
+                        <span class="fa fa-bolt"></span>
+                    </button>
+                    <button type="button"
+                            class="btn btn-outline-secondary js-get-list-basic-german">
+                        <span class="fa fa-bolt"></span>
+                    </button>
+
+
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- searching -->
+
+    <div class="container border">
+        <div class="row text-center font-weight-bolder">
+            <div class="col-sm-4 border">
+                title
+            </div>
+            <div class="col-sm-2 border">
+                company
+            </div>
+            <div class="col-sm-2 border">
+                location
+            </div>
+            <div class="col-sm-2 border">
+                publishedAt
+            </div>
+            <div class="col-sm-2 border">
+                state
+            </div>
+            <div class="w-100"></div>
+            <div class="col-sm-6 border">
+                description
+            </div>
+            <div class="col-sm-6 border">
+                etc
+            </div>
+        </div>
+        {% for job in jobs %}
+        <div class="row text-center  align-middle mt-1 bg-light js-tr-top">
+            <div class="col-sm-4 border">
+                <a href="{{ job.link }}" target="_blank">{{ job.title }}</a>
+            </div>
+            <div class="col border">
+                {{ job.company }}
+            </div>
+            <div class="col border">
+                {{ job.location }}
+            </div>
+            <div class="col border">
+                {{ job.publishedAt|ago }}
+            </div>
+            <div class="col border">
+                <select class="custom-select-sm inputGroupSelect01 js-select-state"
+                        data-url="{{ path('change_application_state',{'jobId':job.jobId})}}"
+                        data-prevalue = "{{ job.applyState }}"
+                >
+                    <option>notApply</option>
+                    <option>trying</option>
+                    <option>pending</option>
+                    <option>failed</option>
+                    <option>interviewCall</option>
+                    <option>secondInterview</option>
+                    <option>skillInterview</option>
+                </select>
+            </div>
+            <div class="w-100"></div>
+            <div class="col-sm-6 border text-left">
+                {{ job.description }}
+            </div>
+            <div class="col-sm-6 border text-left">
+                <textarea
+                        class="form-control js-etc-textarea"
+                        rows="3"
+                        data-url="{{ path('change_application_state',{'jobId':job.jobId})}}"
+                >{{ job.etc }}</textarea>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="row mt-3">
+        <div class="mx-auto ">
+            {{ knp_pagination_render(jobs) }}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/job.js') }}?temp=3"></script>
+{% endblock %}
