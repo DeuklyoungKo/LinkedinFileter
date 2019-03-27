@@ -17,6 +17,8 @@ class Job
     use TimestampableEntity;
 
     const JOB_LIST_FILTER_LOCATION = ['Berlin','Munich','Cologne','Frankfurt'];
+    const JOB_APPLY_STATE = ['notApply','trying','pending','failed','interviewCall','secondInterview','skillInterview'];
+    const JOB_SOURCE = ['Linkedin','Xing','indeed'];
 
     /**
      * @ORM\Id()

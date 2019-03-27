@@ -13,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class JobController extends AbstractController
@@ -307,8 +306,9 @@ class JobController extends AbstractController
     public function createJob(Request $request, EntityManagerInterface $em)
     {
 
+        $job = new Job;
 
-        $form = $this->createForm(JobType::class);
+        $form = $this->createForm(JobType::class, $job);
 
         $form->handleRequest($request);
 
